@@ -1,5 +1,5 @@
 # libraries source file 
-list.pkg<- c("data.table", "abind","ggplot2","corrplot","stringr","plyr","Hmisc","RColorBrewer")
+list.pkg<- c("data.table", "abind","ggplot2","corrplot","stringr","plyr","Hmisc","RColorBrewer","formattable")
 
 req_pkg<-function(packages){
   new.pkg <- list.pkg[!(list.pkg %in% installed.packages()[,"Package"])]
