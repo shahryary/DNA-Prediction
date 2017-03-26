@@ -45,7 +45,7 @@ goodChrOrder <- paste("chr",c(1:22,"X","Y"),sep="")
     }
     
 # getting values column and creating matrix data frame to use in correlation 
-df_cor<-df_gsm[,c("chr","start","finish","gsm")]
+df_cor<-df_gsm[,c("chr","start","end","gsm")]
 df_cor$stem<-df_stem[,c("stem")]
 
 #-------------------- correlation
@@ -64,15 +64,6 @@ names(df_correlation)<-c("chr", "corelation")
 df_correlation<-as.data.frame(df_correlation)
 
 
-snpDensity<-ggplot(df_correlation)+ 
-  geom_histogram(aes(x=start),binwidth=1e6,fill="#c0392b", alpha=0.75) +  # pick a binwidth that is not too small 
-  fte_theme()+
-  facet_wrap(~ chr,ncol = 2) + # seperate plots for each chr, x-scales can differ from chr to chr
-  ggtitle("Density of chromosome  hg19") +
-  xlab("Position in the genome") + 
-  ylab("SNP density") 
-
-plot(df_correlation)
 
 
 test<-df_cor[which(df_cor$chr=="chr14"),]
@@ -83,8 +74,9 @@ cordata = melt(cormatrix$r)
 te<-cordata$value[2]
 hm.palette <- colorRampPalette(c('light green', 'dark green'))
 
-gg <- ggplot(df_correlation, aes(x=Var1, y=Var2, fill=value))
+gg <- ggplot(df_correlation, aes(V1))
 gg <- gg + geom_tile(color="white",size=0.1)
+gg <- gg + coord_cartesian(ylim=c(0,1))
 #gg <- gg + geom_text(aes(label = formattable(value,digit=2,format='f')))
 gg <- gg + theme(axis.ticks=element_blank())
 gg <- gg + theme(axis.text=element_text(size=7))
@@ -95,5 +87,22 @@ gg <- gg + labs(x=NULL, y=NULL, title="Spearman Correlation Matrix")
 gg <-  gg + scale_fill_gradientn(colours = hm.palette(100))
 
 gg
+
+
+
+p <- ggplot(data=df_correlation, aes(x=V1,y=V2)) +
+  
+  geom_bar(stat="identity")
+p
+
+library(reshape2)
+df.long<-melt(df_correlation)
+df.long$V2=as.numeric(levels(df.long$V2))[df.long$V2]
+
+ggplot(df.long,aes(x=V1,y=V2,fill=V2))+
+  geom_bar(stat="identity")+
+  scale_y_continuous(limits=c(0, 1), breaks=c(0.2, 0.4, 0.6, 0.8,1.00))
+
+
 
 cor(df_cor)
