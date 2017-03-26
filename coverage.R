@@ -92,10 +92,10 @@ library(reshape2)
 df.long<-melt(df_correlation)
 df.long$V2=as.numeric(levels(df.long$V2))[df.long$V2]
 
-cols <- colorRampPalette(brewer.pal(3, "Blues"))
+cols <- colorRampPalette(brewer.pal(3, "OrRd"))
 myPal <- cols(length(unique(df.long$V2>0.7)))
 
-
+theme_set(theme_solarized())
 bplot <- ggplot(df.long,aes(x=reorder(V1),y=V2,fill=V2))
 bplot <- bplot + geom_bar(stat="identity")
 bplot <- bplot + geom_tile(color="white",size=0.1)
@@ -106,7 +106,7 @@ bplot <- bplot + labs(x=NULL, y=NULL, title="Spearman Correlation Matrix")
 bplot <- bplot + scale_y_continuous(limits=c(0, 1), breaks=c(0.0,0.2, 0.4, 0.6, 0.8,1.00))
 bplot <- bplot + scale_fill_gradientn(colours = myPal)
 bplot <- bplot + theme(legend.position='none')
-
+bplot <- bplot + theme(panel.background = element_rect(), panel.grid.major.y = element_line( colour = "gray",linetype = "dashed"))
 bplot
 
 
