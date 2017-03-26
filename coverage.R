@@ -64,39 +64,16 @@ names(df_correlation)<-c("chr", "corelation")
 df_correlation<-as.data.frame(df_correlation)
 
 
-
-
-test<-df_cor[which(df_cor$chr=="chr14"),]
-mat<-test[,c("gsm","stem")]
-cormatrix<-rcorr(as.matrix(mat),type=c("pearson")) # corr 1.1
-
-cordata = melt(cormatrix$r)
-te<-cordata$value[2]
-hm.palette <- colorRampPalette(c('light green', 'dark green'))
-
-gg <- ggplot(df_correlation, aes(V1))
-gg <- gg + geom_tile(color="white",size=0.1)
-gg <- gg + coord_cartesian(ylim=c(0,1))
-#gg <- gg + geom_text(aes(label = formattable(value,digit=2,format='f')))
-gg <- gg + theme(axis.ticks=element_blank())
-gg <- gg + theme(axis.text=element_text(size=7))
-gg <- gg + theme(legend.title=element_text(size=8))
-gg <- gg + theme(legend.text=element_text(size=6))
-gg <- gg + theme(axis.text.x = element_text(angle = 45, hjust = 1))
-gg <- gg + labs(x=NULL, y=NULL, title="Spearman Correlation Matrix")
-gg <-  gg + scale_fill_gradientn(colours = hm.palette(100))
-
-gg
-
-library(reshape2)
 df.long<-melt(df_correlation)
 df.long$V2=as.numeric(levels(df.long$V2))[df.long$V2]
+# sort charachter vector in good format 
+df.long$V1 <- factor(df.long$V1,levels=goodChrOrder)
 
 cols <- colorRampPalette(brewer.pal(3, "OrRd"))
 myPal <- cols(length(unique(df.long$V2>0.7)))
 
 theme_set(theme_solarized())
-bplot <- ggplot(df.long,aes(x=reorder(V1),y=V2,fill=V2))
+bplot <- ggplot(df.long,aes(x=V1,y=V2,fill=V2))
 bplot <- bplot + geom_bar(stat="identity")
 bplot <- bplot + geom_tile(color="white",size=0.1)
 bplot <- bplot + geom_text(aes(label = formattable(V2,digit=2,format='f')), position=position_dodge(width=0.9), vjust=-0.25)
@@ -108,8 +85,18 @@ bplot <- bplot + scale_fill_gradientn(colours = myPal)
 bplot <- bplot + theme(legend.position='none')
 bplot <- bplot + theme(panel.background = element_rect(), panel.grid.major.y = element_line( colour = "gray",linetype = "dashed"))
 bplot
+png("snp132_density.png",1200,800)
+print(bplot)
+dev.off()
 
 
 
 
-cor(df_cor)
+# Find all .csv files
+folders <- dir("/Volumes/DISK_IN/BIGDATA_HSE/Master_These/coverage/DNase_1Mbase",pattern="GSM*")
+
+for (j in 1:length(folders)){
+  print(folders[j])
+}
+
+
