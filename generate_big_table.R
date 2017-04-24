@@ -99,4 +99,4 @@ for (folder_name in 1:length(folders)){
 #fwrite(df_zero_ref,file = "df_zero_ref.csv", sep = "\t",col.names = TRUE)
 #fwrite(tmp_big,file = "finalTable.csv", sep = "\t",col.names = TRUE)
   
-#mytest<-fread("finalTable.csv")
+mytest<-fread("/Volumes/DISK_IN/BIGDATA_HSE/Master_These/coverage_bysample/By_sample_finalTable.csv")
