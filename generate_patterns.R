@@ -12,13 +12,13 @@ stem_num="Stem15"
 # root folder
 # you can set path for by_sample or Dnase
 gsm_dir = "/Volumes/DISK_IN/BIGDATA_HSE/Master_These/coverage_bysample/By_Sample_1Mbase/"
-gsm_dir_name="pancreas"
-gsm_ir_type="DNase_hypersensitivity"
-gsm_number="GSM1027335"
+gsm_dir_name="CD34_primary_cells"
+gsm_ir_type="ChIP-Seq_input"
+gsm_number="GSM486702"
 
 # detecting patterns 
 # N= number of repetations to detect pattern  
-N = 3
+N = 2
 pattern<-function(gsm,stem){
   #gsm<-gsm[103:110]
   #stem<-stem[103:110]
@@ -36,6 +36,7 @@ pattern<-function(gsm,stem){
   while (startpos<lenset){
     if (size>lenset){
       size=lenset
+      startpos=size # to finish 
     }
     tmp_gsm<-gsm[startpos:size]
     tmp_stem<-stem[startpos:size]
@@ -62,6 +63,12 @@ pattern<-function(gsm,stem){
 
     startpos=startpos+1
     size=size+1
+
+  }
+  # checking if there is no pattern for number N
+  if(length(pos_start)==0){
+    pos_start[[1]]<-0
+    pos_stop[[1]]<-0
   }
   patt <- data.frame(xmin=pos_start, xmax=pos_stop, ymin=-Inf, ymax=Inf)
   return(patt)
@@ -69,7 +76,7 @@ pattern<-function(gsm,stem){
 
 
 for (i in 1:length(goodChrOrder)){
-  chr=goodChrOrder[i]
+  chr=goodChrOrder[19]
   col.class   <- c(NA, NA, NA,"NULL",NA,"NULL","NULL")
   col.names <- c("chr", "start", "stop", "count")
 
@@ -83,7 +90,7 @@ for (i in 1:length(goodChrOrder)){
   gsm<-gsm[!(gsm$start %in% aa$start),]
   
   #-----------------
-  df <- data.frame(position=stem$start, stemloops=stem$count, Dnas=gsm$count)
+  df <- data.frame(position=stem$start,position_stop=stem$stop, stemloops=stem$count, Dnas=gsm$count)
   
   patt<-pattern(gsm,stem) # detecting patterns 
   gg <- ggplot(df, aes(x=position, y=signal, color=variable))
@@ -92,7 +99,7 @@ for (i in 1:length(goodChrOrder)){
   title<-paste(gsm_dir_name,gsm_ir_type,gsm_number,"Chromosome:",chr,"With Stemloops: ",stem_num,sep = "    ")
   gg <- gg + ggtitle(title)
   gg <- gg+ geom_rect(data=patt, aes(xmin=patt$xmin, xmax=patt$xmax, ymin=-Inf, ymax=Inf),
-                      fill="yellow",
+                      fill="orange",
                       alpha=0.2,
                       inherit.aes = FALSE)
   gg
@@ -113,14 +120,17 @@ if(all(gsm1 == cummin(gsm1))==all(stem1 == cummin(stem1))){
 }else{
   cat("False")
 }
-# move 5 by 5 records for each data set , gsm , stem 
-# check if there are minimum or there are maximum 
-# if there are same add position to list 
-# hight light color in png 
-pattern <- data.frame(xmin=c(0,21000000), xmax=c(20000000,22000000), ymin=-Inf, ymax=Inf)
-gg <- gg+ geom_rect(data=pattern, aes(xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax),
-                    fill="yellow",
-                    alpha=0.2,
-                    inherit.aes = FALSE)
-gg
-dev.off()
+
+
+
+rcorr(df$stemloops,df$Dnas)
+
+
+tmp_df<-df_cor[which(df_cor$chr==ch),]
+mat<-df[,c("stemloops","Dnas")]
+
+cormatrix<-rcorr(as.matrix(mat/1000000),type=c("pearson")) # corr 1.1
+cordata = melt(cormatrix$r)
+te<-cordata$value[2]
+
+

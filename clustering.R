@@ -1,4 +1,7 @@
 # clustering by k-mean method
+
+# clustering by coverage value!!!
+
 source("load_lib.R")
 options(scipen=999)
 
