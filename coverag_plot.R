@@ -6,19 +6,19 @@ df_zero_ref<-fread("df_zero_ref.csv")
 
 # root folder
 # set this path accroding to the Stem folder located in your hard disk
-stem_dir = "/Volumes/DISK_IN/BIGDATA_HSE/Master_These/coverage_stems/Stem15_1Mbase_Results/"
+stem_dir = "/Volumes/DISK_IN/BIGDATA_HSE/Master_These/coverage_stems/Stem6_1Mbase_Results/"
 # set stem number - Stem6 or Stem15 or Stem16
-stem_num="Stem15"
+stem_num="Stem6"
 # root folder
 # you can set path for by_sample or Dnase
 gsm_dir = "/Volumes/DISK_IN/BIGDATA_HSE/Master_These/coverage_bysample/By_Sample_1Mbase/"
-gsm_dir_name="CD34_primary_cells"
-gsm_ir_type="ChIP-Seq_input"
-gsm_number="GSM486702"
+gsm_dir_name="CD4_memory_primary_cells"
+gsm_ir_type="MeDIP-Seq"
+gsm_number="GSM669608"
 
 
 for (i in 1:length(goodChrOrder)){
-      chr=goodChrOrder[23]
+      chr=goodChrOrder[1]
       ch=chr
       col.class   <- c(NA, NA, NA,"NULL","NULL","NULL",NA)
       col.names <- c("chr", "start", "stop", "count")
@@ -32,8 +32,8 @@ for (i in 1:length(goodChrOrder)){
       df<-df[!(df$position %in% aa$start),]
       
       gg <- ggplot(df, aes(x=position, y=signal, color=variable))
-      gg <- gg + geom_line(aes(y=stemloops/mean(stem$count),col="Stemloops")) 
-      gg <- gg + geom_line(aes(y=-Dnas/mean(gsm$count)+2.2, col="Dnas") )
+      gg <- gg + geom_line(aes(y=stemloops/mean(stemloops),col="Stemloops")) 
+      gg <- gg + geom_line(aes(y=-Dnas/mean(Dnas)+2.1, col="Dnas") )
       title<-paste(gsm_dir_name,gsm_ir_type,gsm_number,"Chromosome:",chr,"With Stemloops: ",stem_num,sep = "    ")
       gg <- gg + ggtitle(title)
       gg
@@ -46,24 +46,11 @@ for (i in 1:length(goodChrOrder)){
 
 newX<-df$stemloops/mean(df$stemloops)
 newY<- df$Dnas/mean(df$Dnas)
-cor(newX,newY)
-cor((df$stemloops),(df$Dnas))
+cor(newY[1:5],newX[1:5])
+
+rcorr((df$stemloops),(df$Dnas),type=c("pearson"))
 
 #-------------------------------------------
 
-chr=goodChrOrder[22]
-ch=chr
-col.class   <- c(NA, NA, NA,NA,NA,NA,NA)
-col.names <- c("chr", "start", "stop", "count")
-stem <- fread(paste(stem_dir,chr,".",stem_num,".coverage",sep = ""),colClasses =col.class )
-stem<- stem[order(start),]
-gsm <- fread(paste(gsm_dir,gsm_dir_name,"/",gsm_ir_type,"/",gsm_number,"/",chr,".",gsm_number,".coverage",sep = ""),col.names = col.names,colClasses =col.class )
 
-kk <- data.frame(position=stem$start, stemloops=stem$count, Dnas=gsm$count)
-# removing 0 points
-aa<-df_zero_ref[which(df_zero_ref$chr==ch),]
-kk<-kk[!(kk$position %in% aa$start),]
 
-cor(df$stemloops,df$Dnas)
-
-plot(df$stemloops,df$Dnas)

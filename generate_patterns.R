@@ -12,13 +12,13 @@ stem_num="Stem15"
 # root folder
 # you can set path for by_sample or Dnase
 gsm_dir = "/Volumes/DISK_IN/BIGDATA_HSE/Master_These/coverage_bysample/By_Sample_1Mbase/"
-gsm_dir_name="CD34_primary_cells"
-gsm_ir_type="ChIP-Seq_input"
-gsm_number="GSM486702"
+gsm_dir_name="skin_fetal"
+gsm_ir_type="DNase_hypersensitivity"
+gsm_number="GSM817158"
 
 # detecting patterns 
 # N= number of repetations to detect pattern  
-N = 2
+N = 3
 pattern<-function(gsm,stem){
   #gsm<-gsm[103:110]
   #stem<-stem[103:110]
@@ -76,8 +76,8 @@ pattern<-function(gsm,stem){
 
 
 for (i in 1:length(goodChrOrder)){
-  chr=goodChrOrder[19]
-  col.class   <- c(NA, NA, NA,"NULL",NA,"NULL","NULL")
+  chr=goodChrOrder[20]
+  col.class   <- c(NA, NA, NA,"NULL","NULL","NULL",NA)
   col.names <- c("chr", "start", "stop", "count")
 
   stem <- fread(paste(stem_dir,chr,".",stem_num,".coverage",sep = ""),col.names = col.names,colClasses =col.class )
